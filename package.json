@@ -1,14 +1,14 @@
 {
-  "name": "postcss-pxtorem",
-  "description": "A CSS post-processor that converts px to rem.",
+  "name": "postcss-pxtoremorem",
+  "description": "A CSS post-processor that converts px to rem or em.",
   "version": "5.1.1",
-  "author": "cuth",
+  "author": "cuth and nailao",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:cuth/postcss-pxtorem.git"
+    "url": "git@github.com:nailao/postcss-pxtoremorem.git"
   },
-  "bugs": "https://github.com/cuth/postcss-pxtorem/issues",
+  "bugs": "https://github.com/nailao/postcss-pxtoremorem/issues",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -35,6 +35,7 @@
   "keywords": [
     "css",
     "rem",
+    "em",
     "pixel",
     "px",
     "postcss",

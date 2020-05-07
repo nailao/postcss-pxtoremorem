@@ -7,23 +7,23 @@
 
 "use strict";
 var postcss = require("postcss");
-var pxtorem = require("..");
+var pxtoremorem = require("..");
 var basicCSS = ".rule { font-size: 15px }";
 var filterPropList = require("../lib/filter-prop-list");
 
-describe("pxtorem", function() {
+describe("pxtoremorem", function() {
   it("should work on the readme example", function() {
     var input =
       "h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.2; letter-spacing: 1px; }";
     var output =
       "h1 { margin: 0 0 20px; font-size: 2rem; line-height: 1.2; letter-spacing: 0.0625rem; }";
-    var processed = postcss(pxtorem()).process(input).css;
+    var processed = postcss(pxtoremorem()).process(input).css;
 
     expect(processed).toBe(output);
   });
 
   it("should replace the px unit with rem", function() {
-    var processed = postcss(pxtorem()).process(basicCSS).css;
+    var processed = postcss(pxtoremorem()).process(basicCSS).css;
     var expected = ".rule { font-size: 0.9375rem }";
 
     expect(processed).toBe(expected);
@@ -31,7 +31,7 @@ describe("pxtorem", function() {
 
   it("should ignore non px properties", function() {
     var expected = ".rule { font-size: 2em }";
-    var processed = postcss(pxtorem()).process(expected).css;
+    var processed = postcss(pxtoremorem()).process(expected).css;
 
     expect(processed).toBe(expected);
   });
@@ -42,7 +42,7 @@ describe("pxtorem", function() {
     var options = {
       propWhiteList: ["margin"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -55,7 +55,7 @@ describe("pxtorem", function() {
     var options = {
       propList: ["--*", "font-size"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -66,21 +66,21 @@ describe("pxtorem", function() {
     var options = {
       propList: ["margin"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
 
   it("should not add properties that already exist", function() {
     var expected = ".rule { font-size: 16px; font-size: 1rem; }";
-    var processed = postcss(pxtorem()).process(expected).css;
+    var processed = postcss(pxtoremorem()).process(expected).css;
 
     expect(processed).toBe(expected);
   });
 
   it("should remain unitless if 0", function() {
     var expected = ".rule { font-size: 0px; font-size: 0; }";
-    var processed = postcss(pxtorem()).process(expected).css;
+    var processed = postcss(pxtoremorem()).process(expected).css;
 
     expect(processed).toBe(expected);
   });
@@ -95,7 +95,7 @@ describe("value parsing", function() {
       ".rule { content: '16px'; font-family: \"16px\"; font-size: 16px; }";
     var expected =
       ".rule { content: '16px'; font-family: \"16px\"; font-size: 1rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -108,7 +108,7 @@ describe("value parsing", function() {
       ".rule { content: '16px'; font-family: \"16px\"; font-size: 16px; }";
     var expected =
       ".rule { content: '16px'; font-family: \"16px\"; font-size: 1rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -119,7 +119,7 @@ describe("value parsing", function() {
     };
     var rules = ".rule { background: url(16px.jpg); font-size: 16px; }";
     var expected = ".rule { background: url(16px.jpg); font-size: 1rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -130,20 +130,20 @@ describe("value parsing", function() {
     };
     var rules = ".rule { background: url(16px.jpg); font-size: 16px; }";
     var expected = ".rule { background: url(16px.jpg); font-size: 1rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
 
-  it("should not replace values with an uppercase P or X", function() {
+  it("should not replace values with an uppercase PX", function() {
     var options = {
       propList: ["*"]
     };
     var rules =
       ".rule { margin: 12px calc(100% - 14PX); height: calc(100% - 20px); font-size: 12Px; line-height: 16px; }";
     var expected =
-      ".rule { margin: 0.75rem calc(100% - 14PX); height: calc(100% - 1.25rem); font-size: 12Px; line-height: 1rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+      ".rule { margin: 0.75rem calc(100% - 14PX); height: calc(100% - 1.25rem); font-size: 0.75em; line-height: 1rem; }";
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -156,7 +156,7 @@ describe("rootValue", function() {
     var options = {
       root_value: 10
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -166,7 +166,7 @@ describe("rootValue", function() {
     var options = {
       rootValue: 10
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -182,10 +182,10 @@ describe("rootValue", function() {
         return 20;
       }
     };
-    var processed1 = postcss(pxtorem(options)).process(basicCSS, {
+    var processed1 = postcss(pxtoremorem(options)).process(basicCSS, {
       from: "/tmp/basic.css"
     }).css;
-    var processed2 = postcss(pxtorem(options)).process(css2, {
+    var processed2 = postcss(pxtoremorem(options)).process(css2, {
       from: "/tmp/whatever.css"
     }).css;
 
@@ -201,7 +201,7 @@ describe("unitPrecision", function() {
     var options = {
       unit_precision: 2
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -211,7 +211,7 @@ describe("unitPrecision", function() {
     var options = {
       unitPrecision: 2
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -224,7 +224,7 @@ describe("propWhiteList", function() {
     var options = {
       prop_white_list: ["font"]
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -234,7 +234,7 @@ describe("propWhiteList", function() {
     var options = {
       propWhiteList: ["font"]
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
 
     expect(processed).toBe(expected);
   });
@@ -245,7 +245,7 @@ describe("propWhiteList", function() {
     var options = {
       propWhiteList: ["margin"]
     };
-    var processed = postcss(pxtorem(options)).process(css).css;
+    var processed = postcss(pxtoremorem(options)).process(css).css;
 
     expect(processed).toBe(expected);
   });
@@ -258,7 +258,7 @@ describe("propWhiteList", function() {
     var options = {
       propWhiteList: ["*font*", "margin*", "!margin-left", "*-right", "pad"]
     };
-    var processed = postcss(pxtorem(options)).process(css).css;
+    var processed = postcss(pxtoremorem(options)).process(css).css;
 
     expect(processed).toBe(expected);
   });
@@ -271,7 +271,7 @@ describe("propWhiteList", function() {
     var options = {
       propWhiteList: ["*", "!margin-left", "!*padding*", "!font*"]
     };
-    var processed = postcss(pxtorem(options)).process(css).css;
+    var processed = postcss(pxtoremorem(options)).process(css).css;
 
     expect(processed).toBe(expected);
   });
@@ -282,7 +282,7 @@ describe("propWhiteList", function() {
     var options = {
       propWhiteList: []
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -296,7 +296,7 @@ describe("selectorBlackList", function() {
     var options = {
       selector_black_list: [".rule2"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -307,7 +307,7 @@ describe("selectorBlackList", function() {
     var options = {
       selectorBlackList: [".rule2"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -320,7 +320,7 @@ describe("selectorBlackList", function() {
     var options = {
       selectorBlackList: ["body$"]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -333,7 +333,7 @@ describe("selectorBlackList", function() {
     var options = {
       selectorBlackList: [/^body$/]
     };
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -344,7 +344,7 @@ describe("replace", function() {
     var options = {
       replace: false
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS).css;
+    var processed = postcss(pxtoremorem(options)).process(basicCSS).css;
     var expected = ".rule { font-size: 15px; font-size: 0.9375rem }";
 
     expect(processed).toBe(expected);
@@ -357,7 +357,7 @@ describe("mediaQuery", function() {
     var options = {
       media_query: true
     };
-    var processed = postcss(pxtorem(options)).process(
+    var processed = postcss(pxtoremorem(options)).process(
       "@media (min-width: 500px) { .rule { font-size: 16px } }"
     ).css;
     var expected = "@media (min-width: 31.25rem) { .rule { font-size: 1rem } }";
@@ -369,7 +369,7 @@ describe("mediaQuery", function() {
     var options = {
       mediaQuery: true
     };
-    var processed = postcss(pxtorem(options)).process(
+    var processed = postcss(pxtoremorem(options)).process(
       "@media (min-width: 500px) { .rule { font-size: 16px } }"
     ).css;
     var expected = "@media (min-width: 31.25rem) { .rule { font-size: 1rem } }";
@@ -388,7 +388,7 @@ describe("minPixelValue", function() {
       ".rule { border: 1px solid #000; font-size: 16px; margin: 1px 10px; }";
     var expected =
       ".rule { border: 1px solid #000; font-size: 1rem; margin: 1px 0.625rem; }";
-    var processed = postcss(pxtorem(options)).process(rules).css;
+    var processed = postcss(pxtoremorem(options)).process(rules).css;
 
     expect(processed).toBe(expected);
   });
@@ -513,7 +513,7 @@ describe("exclude", function() {
     var options = {
       exclude: /exclude/i
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS, {
+    var processed = postcss(pxtoremorem(options)).process(basicCSS, {
       from: "exclude/path"
     }).css;
     expect(processed).toBe(basicCSS);
@@ -523,7 +523,7 @@ describe("exclude", function() {
     var options = {
       exclude: "exclude"
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS, {
+    var processed = postcss(pxtoremorem(options)).process(basicCSS, {
       from: "exclude/path"
     }).css;
     expect(processed).toBe(basicCSS);
@@ -535,7 +535,7 @@ describe("exclude", function() {
         return file.indexOf("exclude") !== -1;
       }
     };
-    var processed = postcss(pxtorem(options)).process(basicCSS, {
+    var processed = postcss(pxtoremorem(options)).process(basicCSS, {
       from: "exclude/path"
     }).css;
     expect(processed).toBe(basicCSS);

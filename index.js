@@ -23,7 +23,7 @@ const legacyOptions = {
   propWhiteList: "propList"
 };
 
-module.exports = postcss.plugin("postcss-pxtorem", options => {
+module.exports = postcss.plugin("postcss-pxtoremorem", options => {
   convertLegacyOptions(options);
   const opts = Object.assign({}, defaults, options);
   const satisfyPropList = createPropListMatcher(opts.propList);
@@ -44,23 +44,30 @@ module.exports = postcss.plugin("postcss-pxtorem", options => {
       typeof opts.rootValue === "function"
         ? opts.rootValue(css.source.input)
         : opts.rootValue;
-    const pxReplace = createPxReplace(
+    const pxReplaceRem = createPxReplace(
       rootValue,
       opts.unitPrecision,
-      opts.minPixelValue
+      opts.minPixelValue,
+      "rem"
+    );
+    const pxReplaceEm = createPxReplace(
+      rootValue,
+      opts.unitPrecision,
+      opts.minPixelValue,
+      "em"
     );
 
     css.walkDecls((decl, i) => {
       if (
-        decl.value.indexOf("px") === -1 ||
+        (decl.value.indexOf("px") === -1 && decl.value.indexOf("Px") === -1) ||
         !satisfyPropList(decl.prop) ||
         blacklistedSelector(opts.selectorBlackList, decl.parent.selector)
       )
         return;
 
-      const value = decl.value.replace(pxRegex, pxReplace);
+      const value = decl.value.replace(pxRegex.px, pxReplaceRem).replace(pxRegex.Px, pxReplaceEm);
 
-      // if rem unit already exists, do not add or replace
+      // if rem or em unit already exists, do not add or replace
       if (declarationExists(decl.parent, decl.prop, value)) return;
 
       if (opts.replace) {
@@ -72,8 +79,8 @@ module.exports = postcss.plugin("postcss-pxtorem", options => {
 
     if (opts.mediaQuery) {
       css.walkAtRules("media", rule => {
-        if (rule.params.indexOf("px") === -1) return;
-        rule.params = rule.params.replace(pxRegex, pxReplace);
+        if (rule.params.indexOf("px") === -1 && rule.params.indexOf("Px") === -1) return;
+        rule.params = rule.params.replace(pxRegex.px, pxReplaceRem).replace(pxRegex.Px, pxReplaceEm);
       });
     }
   };
@@ -100,13 +107,13 @@ function convertLegacyOptions(options) {
   });
 }
 
-function createPxReplace(rootValue, unitPrecision, minPixelValue) {
+function createPxReplace(rootValue, unitPrecision, minPixelValue, unitType) {
   return (m, $1) => {
     if (!$1) return m;
     const pixels = parseFloat($1);
     if (pixels < minPixelValue) return m;
     const fixedVal = toFixed(pixels / rootValue, unitPrecision);
-    return fixedVal === 0 ? "0" : fixedVal + "rem";
+    return fixedVal === 0 ? "0" : fixedVal + unitType;
   };
 }
 
